@@ -1,6 +1,7 @@
 import logger from "../../shared/utils/logger.js";
 
 import { sendDiscordAlert } from "./errorHandlers/discordHandler.js";
+import { logToFile, ensureLogDirectory } from "./errorHandlers/fileHandler.js";
 import {
   prepareAlertData,
   handleAlertResults,
@@ -15,12 +16,19 @@ class AlertingService {
         enabled: config.enabledDiscord !== false,
       },
 
+      logging: {
+        logDirectory: config.logDirectory || "./logs",
+        enabled: config.enabledLogging !== false,
+      },
+
       environment: config.environment || process.env.NODE_ENV || "development",
       appName: config.appName || "Notion-Clone",
     };
 
     this.prepareAlertData = prepareAlertData.bind(this);
     this.sendDiscordAlert = sendDiscordAlert.bind(this);
+    this.logToFile = logToFile.bind(this);
+    this.ensureLogDirectory = ensureLogDirectory.bind(this);
     this.handleAlertResults = handleAlertResults.bind(this);
 
     if (this.config.logging.enabled) {
@@ -39,6 +47,10 @@ class AlertingService {
 
     if (this.config.discord.enabled && this.config.discord.webhookUrl) {
       promises.push(this.sendDiscordAlert(alertData));
+    }
+
+    if (this.config.logging.enabled) {
+      promises.push(this.logToFile(alertData));
     }
 
     // Execute alearts and handle any failures

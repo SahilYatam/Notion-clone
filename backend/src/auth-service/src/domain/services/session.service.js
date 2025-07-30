@@ -7,8 +7,6 @@ import { generateToknes } from "../../infrastructure/auth/jwt.service.js";
 import logger from "../../../../shared/utils/logger.js";
 import * as UAParser from 'ua-parser-js';
 
-
-
 import axios from "axios";
 
 /**
