@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Session" ALTER COLUMN "isActive" SET DEFAULT false,
+ALTER COLUMN "expiresAt" SET DEFAULT CURRENT_TIMESTAMP;

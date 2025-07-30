@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// for upgrading schema.prisma file:
+// npx prisma migrate dev 
+
+generator client {
+  provider = "prisma-client-js"
+  //   output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OnboardingStatus {
+  EMAIL_ENTERED
+  EMAIL_VERIFIED
+  COMPLETED
+}
+
+model Auth {
+  id                     String           @id @default(uuid())
+  name                   String? // initially null
+  email                  String           @unique
+  password               String? 
+  isEmailVerified        Boolean          @default(false)
+  onboardingStatus       OnboardingStatus @default(EMAIL_ENTERED)
+  resetPasswordToken     String?
+  resetPasswordExpiresAt DateTime?
+
+  createdAt DateTime                      @default(now())
+  updatedAt DateTime                      @updatedAt
+
+  sessions Session[]
+}
+
+
+model Session {
+    id                   String           @id @default(uuid())
+    userId               String           // Reference to Auth Id
+    deviceName           String?          // e.g "Android", "FireFox on Linux"
+    deviceType           String?
+    ipAddress            String?
+    userAgent            String?
+    location             String?          // "Mumbai, India" 
+    refreshToken         String           @unique
+    isActive             Boolean          @default(false)
+    lastActivity         DateTime         @default(now())
+    expiresAt            DateTime         @default(now())
+    createdAt            DateTime         @default(now())
+
+    auth Auth @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+}

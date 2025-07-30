@@ -1,0 +1,1 @@
+FROM node:lst-slim
