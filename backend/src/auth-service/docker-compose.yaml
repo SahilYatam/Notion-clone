@@ -1,0 +1,26 @@
+version: "3.9"
+
+services:
+  auth-service:
+    build: .
+    container_name: auth-service
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://postgres:password123@localhost:5432/auth_db?connection_limit=10&pool_timeout=20&connect_timeout=10
+      REDIS_URL: https://proven-eel-44180.upstash.io
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    image: postgres:15
+    container_name: auth-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: auth-db
+    ports: 
+      -"5432:5432"
+    volumes:
+      -pgdata:/var/lib/postgresql/data

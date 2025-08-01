@@ -1,5 +1,5 @@
 import { getPrismaClient } from "../../infrastructure/db/db.js";
-import {ApiError} from "../../../../shared/utils/ApiError.js"
+import { ApiError } from "../../utils/ApiError.js"
 import { helperFunction } from "../../utils/helperFunctions.js";
 import {redis} from "../../infrastructure/db/redisDb.js"
 import jwt from "jsonwebtoken";
@@ -7,7 +7,7 @@ import jwt from "jsonwebtoken";
 /**
  * @type {import('@prisma/client').PrismaClient}
  */
-let prisma = new getPrismaClient();
+let prisma = getPrismaClient();
 
 const toPublicUser = (user) => ({
     id: user.id,

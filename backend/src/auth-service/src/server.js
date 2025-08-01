@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import logger from "../../shared/utils/logger.js";
-import { alertingService } from "../../shared/errorMonitoring/alertingService.js";
+import logger from "./utils/logger.js";
+
 import {app} from "./app.js"
 import connectDatabase, { disconnectDatabase } from "./infrastructure/db/db.js"
 import { redis } from "./infrastructure/db/redisDb.js";
@@ -10,17 +10,16 @@ import { redis } from "./infrastructure/db/redisDb.js";
 
 const serviceName = "Auth-Service";
 let httpServer;
-let prisma;
 
 const server = async () => {
   let port = process.env.PORT || 8000;
 
   try {
     logger.info(`🔌 Connecting DB for ${serviceName}...`);
-    prisma = await connectDatabase(process.env.DATABASE_URL);
 
-    // raw query for health check
-    await prisma.$queryRaw`SELECT NOW()`;
+    const DB_URI = process.env.DATABASE_URL;
+    await connectDatabase(DB_URI);
+
     await redis.connect()
 
     logger.info(`✅ PostgreSQL connection established for ${serviceName}`);
@@ -34,12 +33,12 @@ const server = async () => {
   }
 
   process.on("uncaughtException", async (error) => {
-    await handleFataError("uncaughtException", error);
+    await handleFatalError("uncaughtException", error);
   });
 
   process.on("unhandledRejection", async (reason) => {
     const error = reason instanceof Error ? reason : new Error(String(reason));
-    await handleFataError("unhandledRejection", error);
+    await handleFatalError("unhandledRejection", error);
   });
 
   process.on("SIGINT", () => gracefulShutdown("SIGINT"));
@@ -47,21 +46,11 @@ const server = async () => {
   
 };
 
-const handleFataError = async (type, error) => {
-    logger.error(`🚨 ${type.toUpperCase()} in ${serviceName}: ${error.message}`);
-    logger.error(error.stack);
-
-    try {
-        await alertingService.sendCriticalAlert(error, {
-            severity: "critical",
-            service: serviceName,
-        })
-    } catch (err) {
-        logger.error(`❌ Failed to send alert: ${err.message}`);
-    }
-
-    await gracefulShutdown(type);
-}
+const handleFatalError = async (type, error) => {
+  logger.error(`🚨 ${type.toUpperCase()} in ${serviceName}: ${error.message}`);
+  logger.error(error.stack);
+  await gracefulShutdown(type);
+};
 
 const gracefulShutdown = async (signal) => {
     logger.info(`🛑 ${serviceName} shutting down (${signal})...`);

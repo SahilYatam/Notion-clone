@@ -8,7 +8,7 @@ import cron from "node-cron"
 import { sessionService } from "./domain/services/session.service.js";
 
 import { errorHandler, notFoundHandler } from "./middlewares/globalErrorHandler.js";
-import logger from "../../shared/utils/logger.js";
+import logger from "./utils/logger.js";
 
 
 const app = express();

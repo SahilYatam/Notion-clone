@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import logger from "../../../shared/utils/logger.js";
+import logger from "@notion-clone/shared/utils/logger.js";
 
 export const validateRequest = (schema, property = "body", joiOptions = {}) => {
   return (req, res, next) => {

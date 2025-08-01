@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import logger from "../../../../shared/utils/logger.js";
+import logger from "../../utils/logger.js";
 
 let prisma;
 

@@ -1,10 +1,10 @@
 import { getPrismaClient } from "../../infrastructure/db/db.js";
-import { ApiError } from "../../../../shared/utils/ApiError.js"
+import { ApiError } from "../../utils/ApiError.js";
 import { helperFunction } from "../../utils/helperFunctions.js";
 
 import { generateToknes } from "../../infrastructure/auth/jwt.service.js";
 
-import logger from "../../../../shared/utils/logger.js";
+import logger from "../../utils/logger.js";
 import * as UAParser from 'ua-parser-js';
 
 import axios from "axios";
@@ -12,7 +12,7 @@ import axios from "axios";
 /**
  * @type {import('@prisma/client').PrismaClient}
  */
-let prisma = new getPrismaClient();
+let prisma = getPrismaClient();
 
 const createSession = async (userId, refreshToken, ipAddress, userAgent, tokenExpireAt) => {
     try {

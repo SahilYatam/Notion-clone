@@ -1,6 +1,6 @@
 import { getPrismaClient } from "../infrastructure/db/db.js";
-import { ApiError } from "../../../shared/utils/ApiError.js";
-import logger from "../../../shared/utils/logger.js";
+import {ApiError} from "../utils/ApiError.js";
+import logger from "../utils/logger.js"
 import jwt from "jsonwebtoken";
 
 /**

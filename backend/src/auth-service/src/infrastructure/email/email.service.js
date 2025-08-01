@@ -1,4 +1,4 @@
-import logger from "../../../../shared/utils/logger.js";
+import logger from "../../utils/logger.js";
 
 import { transporter } from "./email.config.js";
 import { EMAIL_VERIFY_TEMPLATE } from "./templates/emailVerify.template.js";
@@ -24,7 +24,7 @@ const sendVerifyEmail = async (email, code) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Verify Your Email Address",
-      html
+      html: PASSWORD_RESET_SUCCESS_TEMPLATE,
     });
   } catch (err) {
     logger.error("Error while sending verification email", {message: err.message, stack: err.stack, email});
