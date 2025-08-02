@@ -7,7 +7,7 @@ import { PASSWORD_RESET_REQUEST_TEMPLATE, PASSWORD_RESET_SUCCESS_TEMPLATE } from
 const injectTemplateVariables = (template, variables) => {
     let result = template;
     for(const [key, value] of Object.entries(variables)){
-        result = result.replace(new RegExp(`{{${key}}},`, 'g'), value);
+        result = result.replace(new RegExp(`{{${key}}}`, 'g'), value);
     }
 
     return result;
@@ -17,7 +17,7 @@ const sendVerifyEmail = async (email, code) => {
   try {
 
     const html = injectTemplateVariables(EMAIL_VERIFY_TEMPLATE, {
-        code
+        OtpCode: code
     })
 
     await transporter.sendMail({

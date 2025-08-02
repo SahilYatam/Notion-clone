@@ -14,10 +14,11 @@ import logger from "../../utils/logger.js";
 const creatAccount = asyncHandler(async(req, res) => {
     const user = await authService.creatAccount(req.body);
 
-    await emailService.sendVerifyEmail(user.email, user.otp);
     const {emailToken} = generateEmailToken(user.email)
-
     setEmailCookie(res, emailToken)
+
+    emailService.sendVerifyEmail(user.email, user.userOtp)
+    .catch(err => logger.error('Email sending failed:', err))
 
     return res.status(200).json(new ApiResponse(200, {email: user.email, message: "OTP sent to your email"}, "OTP sent successfully"));
 });

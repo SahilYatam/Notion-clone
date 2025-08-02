@@ -6,7 +6,7 @@ export const EMAIL_VERIFY_TEMPLATE = `
     <title>Verify Your Email</title>
   </head>
   <body style="font-family: Arial, sans-serif; background-color: #ffffff; padding: 40px; color: #000;">
-    <h2>Your Notion signup code is <strong>{{code}}</strong></h2>
+    <h2>Your Notion signup code is <strong>{{OtpCode}}</strong></h2>
 
     <div style="max-width: 600px; margin-top: 40px;">
       <h3 style="font-size: 20px; margin-bottom: 10px;">Sign up for Notion</h3>
@@ -15,7 +15,7 @@ export const EMAIL_VERIFY_TEMPLATE = `
       </p>
 
       <div style="margin: 20px 0; background-color: #f1f1f1; padding: 15px; border-radius: 8px; text-align: center; font-size: 24px; letter-spacing: 2px;">
-        {{code}}
+        {{OtpCode}}
       </div>
 
       <a href="{{magicLink}}" style="display: block; text-align: center; background-color: #2563eb; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 6px; font-weight: bold; width: 100%; max-width: 300px; margin: 0 auto;">

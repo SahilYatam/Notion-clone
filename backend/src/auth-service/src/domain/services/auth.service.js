@@ -23,20 +23,21 @@ const creatAccount = async (userBody) => {
     if(userExist) throw new ApiError(409,"An account with this email address already exists.");
 
     const otp = helperFunction.generateOTP()
+    console.log(otp)
 
     await redis.set(`otp:${email}`, JSON.stringify({
         otp: otp,
         attemps: 0,
     }), {ex: 600});
-    
+
     const user = await prisma.auth.create({
         data: {
             email,
             onboardingStatus: "EMAIL_ENTERED"
         }
-    })
+    });
 
-    return {email: user.email, otp, userId: user.id};
+    return {email: user.email, userOtp: otp, userId: user.id};
 }
 
 const verifyOtp = async (userBody, emailToken) => {
