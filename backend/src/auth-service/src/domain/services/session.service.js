@@ -12,10 +12,11 @@ import axios from "axios";
 /**
  * @type {import('@prisma/client').PrismaClient}
  */
-let prisma = getPrismaClient();
 
 const createSession = async (userId, refreshToken, ipAddress, userAgent, tokenExpireAt) => {
     try {
+        let prisma = getPrismaClient();
+
         const parser = new UAParser.UAParser(); 
         parser.setUA(userAgent)
 
@@ -91,6 +92,7 @@ const getLocationByIp = async (ipAddress) => {
 const clearExpireSession = async () => {
     const thirtyDays = new Date(Date.now() - 1000 * 60 * 60 * 24 * 30);
     try {
+        let prisma = getPrismaClient();
         const result = await prisma.session.deleteMany({
             where:{expiresAt: {lt: thirtyDays}, isActive: false},
         })
@@ -103,6 +105,7 @@ const clearExpireSession = async () => {
 }
 
 const getSessionByRefreshToken = async (token) => {
+    let prisma = getPrismaClient();
     if(!token) throw new ApiError(404, "Refresh token not found");
 
     const hashedToken = helperFunction.hashToken(token);
@@ -123,6 +126,7 @@ const getSessionByRefreshToken = async (token) => {
 
 const refreshAccessToken = async (token) => {
     try {
+        let prisma = getPrismaClient();
         if(!token) throw new ApiError(401, "Unauthorized request");
     
         const session = await getSessionByRefreshToken(token);
@@ -147,6 +151,7 @@ const refreshAccessToken = async (token) => {
 }
 
 const getUserSessions = async (userId) => {
+    let prisma = getPrismaClient();
     const sessions = await prisma.session.findMany({
         where: {userId, isActive: true},
         select: {

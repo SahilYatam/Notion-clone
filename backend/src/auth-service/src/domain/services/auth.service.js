@@ -7,7 +7,6 @@ import jwt from "jsonwebtoken";
 /**
  * @type {import('@prisma/client').PrismaClient}
  */
-let prisma = getPrismaClient();
 
 const toPublicUser = (user) => ({
     id: user.id,
@@ -17,6 +16,7 @@ const toPublicUser = (user) => ({
 });
 
 const creatAccount = async (userBody) => {
+    let prisma = getPrismaClient();
     const email = userBody.email.trim().toLowerCase()
 
     const userExist = await prisma.auth.findUnique({where: {email}});
@@ -72,7 +72,7 @@ const verifyOtp = async (userBody, emailToken) => {
 
     await redis.del(redisKey)
 
-
+    let prisma = getPrismaClient();
     const user = await prisma.auth.update({
         data: {
             onboardingStatus: "EMAIL_VERIFIED",
@@ -84,6 +84,7 @@ const verifyOtp = async (userBody, emailToken) => {
 }
 
 const validateCredentials = async (userId, userBody) => {
+    let prisma = getPrismaClient();
     const user = await prisma.auth.findUnique({where: {id: userId}});
     if(!user) throw new ApiError(401, "Invalid user");
 
@@ -102,6 +103,7 @@ const validateCredentials = async (userId, userBody) => {
 }
 
 const login = async (userBody) => {
+    let prisma = getPrismaClient();
     const email =  userBody.email.trim().toLowerCase()
     const user = await prisma.auth.findUnique({ where: {email} });
 
@@ -117,6 +119,7 @@ const login = async (userBody) => {
 }
 
 const getUser = async(userId) => {
+    let prisma = getPrismaClient();
     const user = await prisma.auth.findUnique({
         where: {id: userId, isEmailVerified: true}
     });
@@ -128,6 +131,7 @@ const getUser = async(userId) => {
 
 const logout = async (refreshToken) => {
     try {
+        let prisma = getPrismaClient();
         const hashedToken = helperFunction.hashToken(refreshToken)
         const session = await prisma.session.delete({
             where: {refreshToken: hashedToken, isActive: true}
@@ -150,6 +154,8 @@ const logout = async (refreshToken) => {
 }
 
 const forgetPassword = async (userBody) => {
+    let prisma = getPrismaClient();
+
     const email = userBody.email.trim().toLowerCase();
     const user = await prisma.auth.findUnique({where: {email}});
     
@@ -172,6 +178,8 @@ const forgetPassword = async (userBody) => {
 }
 
 const resetPassword = async(token, userBody) => {
+    let prisma = getPrismaClient();
+
     const hashedToken = helperFunction.hashToken(token);
     const user = await prisma.auth.findUnique({where: {resetPasswordToken: hashedToken, resetPasswordExpiresAt: {gt: new Date()}}});
 
@@ -192,6 +200,7 @@ const resetPassword = async(token, userBody) => {
 }
 
 const changePassword = async(userId, userBody) => {
+    let prisma = getPrismaClient();
     const user = await prisma.auth.findUnique({where: {id: userId}});
     if(!user) throw new ApiError(404, "User not found.");
 

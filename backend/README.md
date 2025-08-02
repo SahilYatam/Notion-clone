@@ -1,12 +1,5 @@
 # 🧠 Notion Clone - In Progress
 
-This is a full-stack Notion Clone built using:
-- Node.js, Express.js
-- MongoDB, Redis
-- Domain-Driven Design (DDD)
-- Microservices architecture
-- PM2, Sentry, Prometheus, Grafana, Loki
-
 ## ✅ Features (in progress)
 - [x] User Authentication (JWT, Refresh Tokens)
 - [ ] Pages & Blocks CRUD

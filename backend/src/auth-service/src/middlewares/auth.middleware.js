@@ -6,10 +6,10 @@ import jwt from "jsonwebtoken";
 /**
  * @type {import('@prisma/client').PrismaClient}
  */
-let prisma = new getPrismaClient();
 
 export const authentication = async (req, res, next) => {
   try {
+    let prisma = getPrismaClient();    
     const authHeader = req.headers.authorization;
     const tokenFromHeader = authHeader?.startsWith("Bearer ")
       ? authHeader.split(" ")[1]
