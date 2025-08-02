@@ -10,6 +10,9 @@ import { sessionService } from "./domain/services/session.service.js";
 import { errorHandler, notFoundHandler } from "./middlewares/globalErrorHandler.js";
 import logger from "./utils/logger.js";
 
+import authRouter from "./interface/routes/auth.routes.js";
+import sessionRouter from "./interface/routes/session.routes.js";
+
 
 const app = express();
 
@@ -31,6 +34,9 @@ const limiter = rateLimit({
   message: "Too many requests, please try again later."
 });
 
+app.use("/api/v1/auth", limiter, authRouter);
+app.use("/api/v1/session", limiter, sessionRouter);
+
 // Error Handling
 app.use(errorHandler);
 app.use(notFoundHandler);
@@ -39,12 +45,5 @@ cron.schedule("0 0 * * *", async () => {
     logger.info("⏰ Running session cleanup job...");
     await sessionService.clearExpireSession();
 });
-
-// Routes
-import authRouter from "./interface/routes/auth.routes.js";
-import sessionRouter from "./interface/routes/session.routes.js";
-
-app.use("/api/v1/auth", limiter, authRouter);
-app.use("/api/v1/session", limiter, sessionRouter);
 
 export { app };

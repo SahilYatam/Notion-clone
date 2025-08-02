@@ -27,7 +27,7 @@ const creatAccount = async (userBody) => {
     await redis.set(`otp:${email}`, JSON.stringify({
         otp: otp,
         attemps: 0,
-    }), 600);
+    }), {ex: 600});
     
     const user = await prisma.auth.create({
         data: {

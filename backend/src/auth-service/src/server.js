@@ -20,8 +20,6 @@ const server = async () => {
     const DB_URI = process.env.DATABASE_URL;
     await connectDatabase(DB_URI);
 
-    await redis.connect()
-
     logger.info(`✅ PostgreSQL connection established for ${serviceName}`);
 
     httpServer = app.listen(port, () => {

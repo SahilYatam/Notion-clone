@@ -12,10 +12,10 @@ import logger from "../../utils/logger.js";
 
 
 const creatAccount = asyncHandler(async(req, res) => {
-    const user = await authService.creatAccount(req.body, req.cookies.emailToken);
+    const user = await authService.creatAccount(req.body);
 
-    const {emailToken} = await emailService.sendVerifyEmail(user.email, user.otp);
-    generateEmailToken(user.email)
+    await emailService.sendVerifyEmail(user.email, user.otp);
+    const {emailToken} = generateEmailToken(user.email)
 
     setEmailCookie(res, emailToken)
 

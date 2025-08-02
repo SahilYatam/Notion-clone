@@ -24,7 +24,7 @@ const sendVerifyEmail = async (email, code) => {
       from: process.env.EMAIL_USER,
       to: email,
       subject: "Verify Your Email Address",
-      html: PASSWORD_RESET_SUCCESS_TEMPLATE,
+      html
     });
   } catch (err) {
     logger.error("Error while sending verification email", {message: err.message, stack: err.stack, email});
