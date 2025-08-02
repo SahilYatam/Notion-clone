@@ -6,11 +6,11 @@ import { authValidate } from "../../domain/validators/auth.validation.js";
 
 const router = Router();
 
-router.post("/create-account", validateRequest(authValidate.creatAccountSchema), authController.creatAccount);
+router.post("/create-account", validateRequest(authValidate.creatAccountSchema), authController.createAccount);
 
 router.post("/verify-otp", validateRequest(authValidate.verifyOtpSchema), authController.verifyOtp);
 
-router.post("/validate-credentials", validateRequest(authValidate.validateCredentialsSchema), authController.validateCredentials);
+router.post("/validate-credentials", validateRequest(authValidate.validateCredentialsSchema), authentication, authController.validateCredentials);
 
 router.post("/login", validateRequest(authValidate.loginSchema), authController.login);
 

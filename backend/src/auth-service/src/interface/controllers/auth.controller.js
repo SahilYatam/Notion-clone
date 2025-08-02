@@ -11,10 +11,10 @@ import { clearCookies, setCookies, setEmailCookie } from "../../infrastructure/a
 import logger from "../../utils/logger.js";
 
 
-const creatAccount = asyncHandler(async(req, res) => {
-    const user = await authService.creatAccount(req.body);
+const createAccount = asyncHandler(async(req, res) => {
+    const user = await authService.createAccount(req.body);
 
-    const {emailToken} = generateEmailToken(user.email)
+    const emailToken = generateEmailToken(user.email)
     setEmailCookie(res, emailToken)
 
     emailService.sendVerifyEmail(user.email, user.userOtp)
@@ -29,10 +29,8 @@ const verifyOtp = asyncHandler(async(req, res) => {
 
     const user = await authService.verifyOtp(req.body, emailToken);
 
-    res.clearCookie("emailToken");
-
     return res.status(200).json(new ApiResponse(200, {user: {
-        email: user.email, onboardingStatus: user.onboadring
+        email: user.email, onboardingStatus: user.onboarding
     }}, "Email verified successfully"));
 });
 
@@ -111,7 +109,7 @@ const changePassword = asyncHandler(async(req, res) => {
 });
 
 export const authController = {
-    creatAccount,
+    createAccount,
     verifyOtp,
     validateCredentials,
     login,

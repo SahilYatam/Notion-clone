@@ -15,7 +15,7 @@ const toPublicUser = (user) => ({
     onboarding: user.onboardingStatus
 });
 
-const creatAccount = async (userBody) => {
+const createAccount = async (userBody) => {
     let prisma = getPrismaClient();
     const email = userBody.email.trim().toLowerCase()
 
@@ -23,11 +23,10 @@ const creatAccount = async (userBody) => {
     if(userExist) throw new ApiError(409,"An account with this email address already exists.");
 
     const otp = helperFunction.generateOTP()
-    console.log(otp)
 
     await redis.set(`otp:${email}`, JSON.stringify({
         otp: otp,
-        attemps: 0,
+        attempts: 0,
     }), {ex: 600});
 
     const user = await prisma.auth.create({
@@ -52,11 +51,14 @@ const verifyOtp = async (userBody, emailToken) => {
     const submittedOtp = userBody.otp;
 
     const redisKey = `otp:${email}`;
+
     const storedData = await redis.get(redisKey);
     
-    if(!storedData) throw new ApiError("OTP expired or not found");
+    if(!storedData) {
+        throw new ApiError("OTP expired or not found")
+    }
 
-    const {otp: storedOtp, attempts} = JSON.parse(storedData);
+    const {otp: storedOtp, attempts} = storedData;
 
     if(attempts >= 5){
         await redis.del(redisKey);
@@ -67,7 +69,7 @@ const verifyOtp = async (userBody, emailToken) => {
         await redis.set(redisKey, JSON.stringify({
                 otp: storedOtp,
                 attempts: attempts + 1,
-        }), 600)
+        }), {ex: 600})
         throw new ApiError(401, "Invalid OTP");
     }
 
@@ -75,13 +77,16 @@ const verifyOtp = async (userBody, emailToken) => {
 
     let prisma = getPrismaClient();
     const user = await prisma.auth.update({
+        where: {
+            email
+        },
         data: {
             onboardingStatus: "EMAIL_VERIFIED",
             isEmailVerified: true,
         }
     })
 
-    return {email: user.email, userId: user.id, onboadring: user.onboardingStatus};
+    return {email: user.email, userId: user.id, onboarding: user.onboardingStatus};
 }
 
 const validateCredentials = async (userId, userBody) => {
@@ -221,7 +226,7 @@ const changePassword = async(userId, userBody) => {
 }
 
 export const authService = {
-    creatAccount,
+    createAccount,
     verifyOtp,
     validateCredentials,
     login,
