@@ -28,6 +28,14 @@ const verifyOtp = asyncHandler(async(req, res) => {
     if(!emailToken) throw new ApiError(401, "Email verification token not found");
 
     const user = await authService.verifyOtp(req.body, emailToken);
+    const {accessToken, refreshToken, refreshTokenExpiry} = generateToknes(user.userId);
+
+    const ip = await sessionService.getClientIp(req)
+    const userAgent = req.headers["user-agent"] || "unknown"
+
+    await sessionService.createSession(user.userId, refreshToken, ip, userAgent, refreshTokenExpiry);
+
+    setCookies(res, accessToken, refreshToken);
 
     return res.status(200).json(new ApiResponse(200, {user: {
         email: user.email, onboardingStatus: user.onboarding
@@ -38,15 +46,7 @@ const validateCredentials = asyncHandler(async(req, res) => {
     const userId = req.user?.id;
 
     const user = await authService.validateCredentials(userId, req.body);
-    const {accessToken, refreshToken} = generateToknes(user.userId)
-
-    const ip = await sessionService.getClientIp(req)
-    const userAgent = req.headers["user-agent"] || "unknown"
-
-    await sessionService.createSession(user.id, refreshToken, ip, userAgent);
-
-    setCookies(res, accessToken, refreshToken);
-
+    
     return res.status(200).json(new ApiResponse(200, {user}, "Name and Password added successfully"));
 });
 

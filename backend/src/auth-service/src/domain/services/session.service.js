@@ -5,7 +5,7 @@ import { helperFunction } from "../../utils/helperFunctions.js";
 import { generateToknes } from "../../infrastructure/auth/jwt.service.js";
 
 import logger from "../../utils/logger.js";
-import * as UAParser from 'ua-parser-js';
+import * as UAParser from 'ua-parser-js'
 
 import axios from "axios";
 
@@ -16,6 +16,7 @@ import axios from "axios";
 const createSession = async (userId, refreshToken, ipAddress, userAgent, tokenExpireAt) => {
     try {
         let prisma = getPrismaClient();
+        console.log('Input params:', { userId, ipAddress, userAgent, tokenExpireAt });
 
         const parser = new UAParser.UAParser(); 
         parser.setUA(userAgent)
@@ -24,10 +25,11 @@ const createSession = async (userId, refreshToken, ipAddress, userAgent, tokenEx
         const os = parser.getOS() // {name: "Linux"}
         const device = parser.getDevice() // {type: 'desktop',}
 
+        console.log('Parsed device info:', { browser, os, device });
+
         const deviceName = `${browser.name || "Unknown Browser"} on ${os.name || "Unknown OS"}`
         const deviceType = device.type || "Desktop"
 
-        const location = getLocationByIp(ipAddress)
 
         const hashedRefreshToken = helperFunction.hashToken(refreshToken)
         const session = await prisma.session.create({
@@ -38,9 +40,8 @@ const createSession = async (userId, refreshToken, ipAddress, userAgent, tokenEx
                 userAgent,
                 deviceName,
                 deviceType,
-                location,
                 lastActivity: new Date(),
-                expiresAt: tokenExpireAt,
+                expiresAt: new Date(tokenExpireAt),
                 isActive: true
             }
         })
@@ -65,28 +66,6 @@ const getClientIp = (req) => {
     };
 
     return req.conntection?.remoteAddress || req.socket?.remoteAddress || null;
-}
-
-const getLocationByIp = async (ipAddress) => {
-    try {
-        const {data} = await axios.get(`http://ip-api.com/json/${ipAddress}?fields=country,regionName,city,lat,lon,status,message`);
-
-        if(data.status === "success") {
-            return {
-                country: data.country,
-                region: data.regionName,
-                city: data.city,
-                latitude: data.lat,
-                longitude: data.lon,
-            }
-        }else{
-            return {error: `GeoIP lookup failed: ${data.message}`}
-        }
-
-    } catch (error) {
-        logger.error('GeoIP lookup error:', error.message);
-        return { error: 'GeoIP request failed' }
-    }
 }
 
 const clearExpireSession = async () => {
@@ -160,7 +139,6 @@ const getUserSessions = async (userId) => {
             deviceType: true,
             userAgent: true,
             ipAddress: true,
-            location: true,
             lastActivity: true,
             isActive: true,
             expiresAt: true,

@@ -47,7 +47,6 @@ model Session {
     deviceType           String?
     ipAddress            String?
     userAgent            String?
-    location             String?          // "Mumbai, India" 
     refreshToken         String           @unique
     isActive             Boolean          @default(false)
     lastActivity         DateTime         @default(now())
