@@ -20,7 +20,7 @@ router.post("/forget-password-request", validateRequest(authValidate.forgetPassw
 
 router.post("rest-password/:token", validateRequest(authValidate.resetPasswordSchema), authController.resetPassword);
 
-router.post("/change-password", validateRequest(authValidate.changePasswordSchema), authController.changePassword);
+router.post("/change-password", validateRequest(authValidate.changePasswordSchema), authentication, authController.changePassword);
 
 router.get("/user-profile", authentication, authController.getUser);
 

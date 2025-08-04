@@ -4,7 +4,6 @@ import { setCookies } from "../../infrastructure/auth/cookie.service.js";
 export const handleRefreshToken = async(req, res, next) => {
     try {
         const refreshToken = req.cookies.refreshToken;
-        console.log("Refresh token from cookies:", typeof refreshToken, refreshToken);
         
         const {accessToken, rawRefreshToken} = await sessionService.refreshAccessToken(refreshToken); // line 9
 

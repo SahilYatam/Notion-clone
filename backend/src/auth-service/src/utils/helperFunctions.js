@@ -6,7 +6,7 @@ const hashPassword = async (password) => {
   return bcrypt.hash(password, salt);
 };
 
-const comparePassword = (password, hashPass) => {
+const comparePassword = async (password, hashPass) => {
   return bcrypt.compare(password, hashPass);
 };
 

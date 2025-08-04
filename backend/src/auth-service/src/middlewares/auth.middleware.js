@@ -21,22 +21,39 @@ export const authentication = async (req, res, next) => {
     if (!accessToken)
       throw new ApiError(401, "Unauthorized - No access token provided");
 
+    logger.debug("🔍 Attempting to verify token");
+
     const decoded = jwt.verify(accessToken, process.env.ACCESS_TOKEN);
-    if (!decoded.userId) {
-     throw new ApiError(401, "Invalid token payload");
+
+    const userId = decoded.userId || decoded.id || decoded.sub;
+
+    if (!userId) {
+      logger.error("❌ Token payload missing user identifier", {
+        payload: decoded,
+        availableKeys: Object.keys(decoded)
+      })
+      throw new ApiError(401, "Invalid token payload - missing user identifier");
     }
+
+    logger.debug("🔍 Looking up user with ID: ", userId);
 
     const user = await prisma.auth.findUnique({
       where: { id: decoded.userId },
     });
 
-    if (!user) throw new ApiError(401, "Invalid token - user not found");
+    if (!user) {
+        logger.error("❌ User not found in database", { userId });
+        throw new ApiError(401, "Invalid token - user not found");
+    }
 
     req.user = user;
+    logger.debug("✅ Authentication successful", { userId: user.id });
     next();
   } catch (error) {
     logger.error("❌ Authentication middleware error", {
       message: error.message,
+      stack: error.stack,
+      name: error.name
     });
 
     if (error instanceof ApiError) {
@@ -67,9 +84,5 @@ export const authentication = async (req, res, next) => {
       message: "Internal server error",
       errorMessage: error.message
     });
-  }finally{
-    if(prisma){
-        await prisma.$disconnect();
-    }
   }
 };

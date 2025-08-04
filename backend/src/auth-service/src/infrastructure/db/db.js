@@ -98,9 +98,9 @@ const disconnectDatabase = async () => {
   if (prisma) {
     try {
       await prisma.$disconnect();
-      logger.info("Database disconnected successfully");
+      logger.info("✅ Database disconnected successfully");
     } catch (error) {
-      logger.error(`Error disconnecting from database: ${error.message}`);
+      logger.error(`❌ Error disconnecting from database: ${error.message}`);
     } finally {
       prisma = null;
     }

@@ -102,23 +102,15 @@ const getSessionByRefreshToken = async (token) => {
 
 const refreshAccessToken = async (token) => {
     try {
-        console.log("🔍 Starting refreshAccessToken with token:", token);
         let prisma = getPrismaClient();
         if(!token) throw new ApiError(401, "Unauthorized request");
     
-        console.log("🔍 About to call getSessionByRefreshToken");
         const session = await getSessionByRefreshToken(token);
-        console.log("🔍 Session found:", session);
     
-        console.log("🔍 Generating new tokens for userId:", session.userId);
         const {accessToken, refreshToken: rawRefreshToken, refreshTokenExpiry} = generateTokens(session.userId);
-        console.log("🔍 New tokens generated");
 
-        console.log("🔍 Hashing new refresh token");
         const newRefreshToken = helperFunction.hashToken(rawRefreshToken);
-        console.log("🔍 New refresh token hashed");
     
-        console.log("🔍 Updating session in database");
         await prisma.session.update({
             where: {id: session.id},
             data: {
@@ -126,8 +118,6 @@ const refreshAccessToken = async (token) => {
                 expiresAt: refreshTokenExpiry
             }
         });
-
-        console.log("🔍 Session updated successfully");
 
         return {accessToken, rawRefreshToken};
     } catch (error) {

@@ -3,10 +3,8 @@ import { ApiError } from "../../utils/ApiError.js"
 import { helperFunction } from "../../utils/helperFunctions.js";
 import {redis} from "../../infrastructure/db/redisDb.js"
 import jwt from "jsonwebtoken";
+import logger from "../../utils/logger.js";
 
-/**
- * @type {import('@prisma/client').PrismaClient}
- */
 
 const toPublicUser = (user) => ({
     id: user.id,
@@ -91,13 +89,10 @@ const verifyOtp = async (userBody, emailToken) => {
 
 const validateCredentials = async (userId, userBody) => {
     let prisma = getPrismaClient();
-    const user = await prisma.auth.findUnique({where: {id: userId}});
-    if(!user) throw new ApiError(401, "Invalid user");
-
-    const hashedPassword = helperFunction.hashPassword(userBody.password)
+    const hashedPassword = await helperFunction.hashPassword(userBody.password)
 
     const userDetails = await prisma.auth.update({
-        where: {id: user.id},
+        where: {id: userId},
         data: {
             name: userBody.name,
             password: hashedPassword,
@@ -142,18 +137,16 @@ const logout = async (refreshToken) => {
         const session = await prisma.session.delete({
             where: {refreshToken: hashedToken, isActive: true}
         });
-        
-        if (!session) {
-          throw new ApiError(403, "Session not found or already invalidated");
-        }
-
-        await prisma.session.delete({
-            where: {id: session.id}
-        });
 
         logger.info(`🔓 Session invalidated (Session ID: ${session.id})`);
         return { message: "Session invalidated successfully" };
     } catch (error) {
+        if (error.code === 'P2025') {
+            // Record not found
+            logger.warn("⚠️ Session not found or already invalidated", { refreshToken: hashedToken });
+            throw new ApiError(403, "Session not found or already invalidated");
+        }
+
         logger.error("❌ Error during logout", { message: error.message, stack: error.stack });
         throw new ApiError(500, "Logout failed");   
     }
@@ -206,9 +199,14 @@ const resetPassword = async(token, userBody) => {
 }
 
 const changePassword = async(userId, userBody) => {
+
+/**
+ * @type {import('@prisma/client').PrismaClient}
+ */
     let prisma = getPrismaClient();
-    const user = await prisma.auth.findUnique({where: {id: userId}});
-    if(!user) throw new ApiError(404, "User not found.");
+    const user = await prisma.auth.findUnique({
+        where: {id: userId}
+    })
 
     const oldPasswordMatching = await helperFunction.comparePassword(userBody.password, user.password);
     if(!oldPasswordMatching) throw new ApiError(401, "Invalid password.");

@@ -44,7 +44,6 @@ const verifyOtp = asyncHandler(async(req, res) => {
 
 const validateCredentials = asyncHandler(async(req, res) => {
     const userId = req.user?.id;
-    console.log("userId and body: ",userId, req.body)
     const {name, password} = req.body;
 
     const user = await authService.validateCredentials(userId, {name, password});
@@ -54,7 +53,7 @@ const validateCredentials = asyncHandler(async(req, res) => {
 
 const login = asyncHandler(async(req, res) => {
     const user = await authService.login(req.body);
-    const {accessToken, refreshToken, refreshTokenExpiry} = generateTokens(user.userId)
+    const {accessToken, refreshToken, refreshTokenExpiry} = generateTokens(user.id)
 
     const ip = await sessionService.getClientIp(req)
     const userAgent = req.headers["user-agent"] || "unknown"
@@ -104,7 +103,8 @@ const resetPassword = asyncHandler(async(req, res) => {
 });
 
 const changePassword = asyncHandler(async(req, res) => {
-    const user = await authService.changePassword(req.user?.id, req.body);
+    const userId = req.user?.id
+    const user = await authService.changePassword(userId, req.body);
 
     logger.info("Password changed successfully from this Id: ", { userId: user.userId });
     return res.status(200).json(new ApiResponse(200, {}, "Password changed successfully"));
