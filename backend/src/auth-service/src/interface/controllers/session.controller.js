@@ -13,3 +13,10 @@ export const handleRefreshToken = async(req, res, next) => {
         next(error);
     }
 }
+
+export const getUserSessions = async(req, res) => {
+    const userId = req.user?.id;
+    const session = await sessionService.getUserSessions(userId);
+
+    return res.status(200).json(session, {message: "Session fetch successfull"})
+}

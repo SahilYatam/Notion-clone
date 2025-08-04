@@ -6,6 +6,10 @@ import jwt from "jsonwebtoken";
 import logger from "../../utils/logger.js";
 
 
+/**
+ * @type {import('@prisma/client').PrismaClient}
+ */
+
 const toPublicUser = (user) => ({
     id: user.id,
     name: user.name,
@@ -180,7 +184,12 @@ const resetPassword = async(token, userBody) => {
     let prisma = getPrismaClient();
 
     const hashedToken = helperFunction.hashToken(token);
-    const user = await prisma.auth.findUnique({where: {resetPasswordToken: hashedToken, resetPasswordExpiresAt: {gt: new Date()}}});
+    const user = await prisma.auth.findUnique({
+        where: {
+            resetPasswordToken: hashedToken,
+            resetPasswordExpiresAt: {gt: new Date()}
+        }
+    });
 
     if(!user) throw new ApiError(403, "Invalid or Expired reset token");
 
@@ -199,10 +208,6 @@ const resetPassword = async(token, userBody) => {
 }
 
 const changePassword = async(userId, userBody) => {
-
-/**
- * @type {import('@prisma/client').PrismaClient}
- */
     let prisma = getPrismaClient();
     const user = await prisma.auth.findUnique({
         where: {id: userId}
