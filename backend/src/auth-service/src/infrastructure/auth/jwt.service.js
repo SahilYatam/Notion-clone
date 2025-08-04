@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 import { helperFunction } from "../../utils/helperFunctions.js";
 
-export const generateToknes = (userId) => {
+export const generateTokens = (userId) => {
   
-  const accessToken = jwt.sign({ userId }, process.env.JWT_SECRET, {
+  const accessToken = jwt.sign({ userId }, process.env.ACCESS_TOKEN, {
     expiresIn: "15m",
   });   
 

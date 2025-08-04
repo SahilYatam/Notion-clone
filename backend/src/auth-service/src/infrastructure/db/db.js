@@ -81,11 +81,17 @@ function sleep(ms) {
 
 // Utility function to get the Prisma client instance
 const getPrismaClient = () => {
-  if (!prisma) {
-    throw new Error("Database not connected. Call connectDatabase() first.");
-  }
-  return prisma;
-};
+    if (!prisma) {
+        prisma = new PrismaClient();
+        
+        // Connect immediately
+        prisma.$connect().catch((error) => {
+            logger.error("Failed to connect to database:", error);
+            throw new Error("Database not connected. Call connectDatabase() first.");
+        });
+    }
+    return prisma;
+}
 
 // Graceful shutdown function
 const disconnectDatabase = async () => {

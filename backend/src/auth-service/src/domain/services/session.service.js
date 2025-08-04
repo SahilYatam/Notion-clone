@@ -2,7 +2,7 @@ import { getPrismaClient } from "../../infrastructure/db/db.js";
 import { ApiError } from "../../utils/ApiError.js";
 import { helperFunction } from "../../utils/helperFunctions.js";
 
-import { generateToknes } from "../../infrastructure/auth/jwt.service.js";
+import { generateTokens } from "../../infrastructure/auth/jwt.service.js";
 
 import logger from "../../utils/logger.js";
 import * as UAParser from 'ua-parser-js'
@@ -16,7 +16,6 @@ import axios from "axios";
 const createSession = async (userId, refreshToken, ipAddress, userAgent, tokenExpireAt) => {
     try {
         let prisma = getPrismaClient();
-        console.log('Input params:', { userId, ipAddress, userAgent, tokenExpireAt });
 
         const parser = new UAParser.UAParser(); 
         parser.setUA(userAgent)
@@ -24,8 +23,6 @@ const createSession = async (userId, refreshToken, ipAddress, userAgent, tokenEx
         const browser = parser.getBrowser() // {name: "FireFox"}
         const os = parser.getOS() // {name: "Linux"}
         const device = parser.getDevice() // {type: 'desktop',}
-
-        console.log('Parsed device info:', { browser, os, device });
 
         const deviceName = `${browser.name || "Unknown Browser"} on ${os.name || "Unknown OS"}`
         const deviceType = device.type || "Desktop"
@@ -41,7 +38,7 @@ const createSession = async (userId, refreshToken, ipAddress, userAgent, tokenEx
                 deviceName,
                 deviceType,
                 lastActivity: new Date(),
-                expiresAt: new Date(tokenExpireAt),
+                expiresAt: tokenExpireAt,
                 isActive: true
             }
         })
@@ -93,7 +90,7 @@ const getSessionByRefreshToken = async (token) => {
         where: {
             refreshToken: hashedToken,
             isActive: true,
-            expiresAt: {gt: Date.now()}
+            expiresAt: {gt: new Date()}
         }
     });
 
@@ -105,15 +102,23 @@ const getSessionByRefreshToken = async (token) => {
 
 const refreshAccessToken = async (token) => {
     try {
+        console.log("🔍 Starting refreshAccessToken with token:", token);
         let prisma = getPrismaClient();
         if(!token) throw new ApiError(401, "Unauthorized request");
     
+        console.log("🔍 About to call getSessionByRefreshToken");
         const session = await getSessionByRefreshToken(token);
+        console.log("🔍 Session found:", session);
     
-        const {accessToken, refreshToken: rawRefreshToken, refreshTokenExpiry} =  generateToknes(session.userId);
+        console.log("🔍 Generating new tokens for userId:", session.userId);
+        const {accessToken, refreshToken: rawRefreshToken, refreshTokenExpiry} = generateTokens(session.userId);
+        console.log("🔍 New tokens generated");
 
-        const newRefreshToken = helperFunction.hashToken(rawRefreshToken)
+        console.log("🔍 Hashing new refresh token");
+        const newRefreshToken = helperFunction.hashToken(rawRefreshToken);
+        console.log("🔍 New refresh token hashed");
     
+        console.log("🔍 Updating session in database");
         await prisma.session.update({
             where: {id: session.id},
             data: {
@@ -122,8 +127,16 @@ const refreshAccessToken = async (token) => {
             }
         });
 
+        console.log("🔍 Session updated successfully");
+
         return {accessToken, rawRefreshToken};
     } catch (error) {
+        console.error("🚨 Detailed error in refreshAccessToken:", {
+            message: error.message,
+            stack: error.stack,
+            name: error.constructor.name
+        });
+
         logger.error("Error in refreshAccess Token", {message: error.message, stack: error.stack});
         throw new ApiError(500, "Failed to refresh access token");
     }

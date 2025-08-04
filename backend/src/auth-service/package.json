@@ -15,6 +15,8 @@
     "@notion-clone/shared": "file:../shared",
     "@prisma/client": "^6.12.0",
     "@prisma/extension-accelerate": "^2.0.2",
+    "@sentry/node": "^7.92.0",
+    "@sentry/tracing": "^7.92.0",
     "@upstash/redis": "^1.35.1",
     "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
