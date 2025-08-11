@@ -1,6 +1,6 @@
-import { getPrismaClient } from "../infrastructure/db/db.js";
-import {ApiError} from "../utils/ApiError.js";
-import logger from "../utils/logger.js"
+import { prisma } from "../infrastructure/db/db.js";
+import {ApiError} from "../../../shared/utils/ApiError.js";
+import logger from "../../../shared/utils/logger.js"
 import jwt from "jsonwebtoken";
 
 /**
@@ -8,9 +8,7 @@ import jwt from "jsonwebtoken";
  */
 
 export const authentication = async (req, res, next) => {
-  let prisma;
-  try {
-    prisma = getPrismaClient();    
+  try { 
     const authHeader = req.headers.authorization;
     const tokenFromHeader = authHeader?.startsWith("Bearer ")
       ? authHeader.split(" ")[1]

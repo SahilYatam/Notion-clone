@@ -1,10 +1,9 @@
-import { getPrismaClient } from "../../infrastructure/db/db.js";
-import { ApiError } from "../../utils/ApiError.js"
+import { prisma } from "../../infrastructure/db/db.js";
+import { ApiError } from "../../../../shared/utils/ApiError.js"
 import { helperFunction } from "../../utils/helperFunctions.js";
 import {redis} from "../../infrastructure/db/redisDb.js"
 import jwt from "jsonwebtoken";
-import logger from "../../utils/logger.js";
-
+import logger from "../../../../shared/utils/logger.js";
 
 /**
  * @type {import('@prisma/client').PrismaClient}
@@ -18,9 +17,7 @@ const toPublicUser = (user) => ({
 });
 
 const createAccount = async (userBody) => {
-    let prisma = getPrismaClient();
     const email = userBody.email.trim().toLowerCase()
-
     const userExist = await prisma.auth.findUnique({where: {email}});
     if(userExist) throw new ApiError(409,"An account with this email address already exists.");
 
@@ -92,7 +89,6 @@ const verifyOtp = async (userBody, emailToken) => {
 }
 
 const validateCredentials = async (userId, userBody) => {
-    let prisma = getPrismaClient();
     const hashedPassword = await helperFunction.hashPassword(userBody.password)
 
     const userDetails = await prisma.auth.update({
@@ -108,7 +104,6 @@ const validateCredentials = async (userId, userBody) => {
 }
 
 const login = async (userBody) => {
-    let prisma = getPrismaClient();
     const email =  userBody.email.trim().toLowerCase()
     const user = await prisma.auth.findUnique({ where: {email} });
 
@@ -123,8 +118,15 @@ const login = async (userBody) => {
     return toPublicUser(user);
 }
 
+const getUserById = async(userId) => {
+    const user = await prisma.auth.findUnique({
+        where: {id: userId},
+        select: {id: true}
+    });
+    return {userId: user.id};
+}
+
 const getUser = async(userId) => {
-    let prisma = getPrismaClient();
     const user = await prisma.auth.findUnique({
         where: {id: userId, isEmailVerified: true}
     });
@@ -136,7 +138,6 @@ const getUser = async(userId) => {
 
 const logout = async (refreshToken) => {
     try {
-        let prisma = getPrismaClient();
         const hashedToken = helperFunction.hashToken(refreshToken)
         const session = await prisma.session.delete({
             where: {refreshToken: hashedToken, isActive: true}
@@ -157,8 +158,6 @@ const logout = async (refreshToken) => {
 }
 
 const forgetPassword = async (userBody) => {
-    let prisma = getPrismaClient();
-
     const email = userBody.email.trim().toLowerCase();
     const user = await prisma.auth.findUnique({where: {email}});
     
@@ -181,8 +180,6 @@ const forgetPassword = async (userBody) => {
 }
 
 const resetPassword = async(token, userBody) => {
-    let prisma = getPrismaClient();
-
     const hashedToken = helperFunction.hashToken(token);
     const user = await prisma.auth.findUnique({
         where: {
@@ -208,7 +205,6 @@ const resetPassword = async(token, userBody) => {
 }
 
 const changePassword = async(userId, userBody) => {
-    let prisma = getPrismaClient();
     const user = await prisma.auth.findUnique({
         where: {id: userId}
     })
@@ -233,6 +229,7 @@ export const authService = {
     verifyOtp,
     validateCredentials,
     login,
+    getUserById,
     getUser,
     logout,
     forgetPassword,

@@ -6,7 +6,8 @@ import { handleRefreshToken, getUserSessions } from "../controllers/session.cont
 
 const router = Router();
 
-router.post("/refresh-token", validateRequest(sessionValidation.refreshTokenSchema), handleRefreshToken);
+router.post("/refresh-token", validateRequest(sessionValidation.refreshTokenSchema, "cookies"), handleRefreshToken), "cookies";
+
 
 router.get("/get-user-sessions", authentication, getUserSessions);
 

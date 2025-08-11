@@ -1,4 +1,4 @@
-import logger from "../../utils/logger.js";
+import logger from "../../../../shared/utils/logger.js";
 
 import { transporter } from "./email.config.js";
 import { EMAIL_VERIFY_TEMPLATE } from "./templates/emailVerify.template.js";

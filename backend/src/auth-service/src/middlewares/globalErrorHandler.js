@@ -11,7 +11,7 @@
 //     });
 // };
 
-import logger from "../utils/logger.js";
+import logger from "../../../shared/utils/logger.js";
 
 // In globalErrorHandler.js
 export const errorHandler = (err, req, res, next) => {

@@ -33,7 +33,7 @@ export const createSessionSchema = Joi.object({
 });
 
 const refreshTokenSchema = Joi.object({
-  token: Joi.string().min(20).required().messages({
+  refreshToken: Joi.string().min(20).required().messages({
     'string.base': 'Refresh token must be a string',
     'string.empty': 'Refresh token cannot be empty',
     'string.min': 'Refresh token must be at least 20 characters',

@@ -5,7 +5,7 @@ export const handleRefreshToken = async(req, res, next) => {
     try {
         const refreshToken = req.cookies.refreshToken;
         
-        const {accessToken, rawRefreshToken} = await sessionService.refreshAccessToken(refreshToken); // line 9
+        const {accessToken, rawRefreshToken} = await sessionService.refreshAccessToken(refreshToken);
 
         setCookies(res, accessToken, rawRefreshToken);
         return res.status(200).json({message: "Token refreshed successfully"});

@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-import logger from "./utils/logger.js";
+import logger from "../../shared/utils/logger.js";
 
 import {app} from "./app.js"
 import connectDatabase, { disconnectDatabase } from "./infrastructure/db/db.js"

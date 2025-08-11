@@ -1,7 +1,8 @@
 import { PrismaClient } from "@prisma/client";
-import logger from "../../utils/logger.js";
+import logger from "../../../../shared/utils/logger.js";
 
 let prisma;
+let isConnecting = false;
 
 const connectDatabase = async (dbURI) => {
   if (!dbURI) {
@@ -10,6 +11,12 @@ const connectDatabase = async (dbURI) => {
     throw error;
   }
 
+  if(prisma) {
+    logger.info("Database already connected, reusing existing connection");
+    return prisma;
+  }
+
+  isConnecting = true;
   let maxRetries = 5;
   let retryDelay = 5000;
 
@@ -27,27 +34,26 @@ const connectDatabase = async (dbURI) => {
           { level: "info", emit: "event" },
           { level: "error", emit: "event" },
         ],
+        // Connection pool optimization
+        __internal: {
+            engine: {
+                connectionTimeout: 30000,
+                maxIdleTime: 600000,
+            }
+        }
       });
 
       await prisma.$connect();
+
+      // Set up event listeners only once
+      setupPrismaEventListeners()
 
       logger.info(`PostgreSQL connected successfully`, {
         attempt: attempt,
         database: "Connected via Prisma",
       });
 
-      prisma.$on("warn", (e) => {
-        logger.warn(`⚠️ Prisma warning: ${e.message}`);
-      });
-
-      prisma.$on("info", (e) => {
-        logger.info(`ℹ️ Prisma info: ${e.message}`);
-      });
-
-      prisma.$on("error", (e) => {
-        logger.error(`❌ Prisma error: ${e.message}`);
-      });
-
+      
       return prisma;
     } catch (error) {
       logger.error(`PostgreSQL connection attempt ${attempt} failed`, {
@@ -82,15 +88,34 @@ function sleep(ms) {
 // Utility function to get the Prisma client instance
 const getPrismaClient = () => {
     if (!prisma) {
-        prisma = new PrismaClient();
+        // prisma = new PrismaClient();
         
-        // Connect immediately
-        prisma.$connect().catch((error) => {
-            logger.error("Failed to connect to database:", error);
-            throw new Error("Database not connected. Call connectDatabase() first.");
-        });
+        // // Connect immediately
+        // prisma.$connect().catch((error) => {
+        //     logger.error("Failed to connect to database:", error);
+        //     throw new Error("Database not connected. Call connectDatabase() first.");
+        // });
+        throw new Error("Database not connected. Call connectDatabase() first.");
     }
     return prisma;
+}
+
+// Set up Prisma event listeners (called only once)
+const setupPrismaEventListeners = () => {
+    if (!prisma) return;
+
+    prisma.$on("warn", (e) => {
+        logger.warn(`⚠️ Prisma warning: ${e.message}`);
+    });
+
+    prisma.$on("info", (e) => {
+      logger.info(`ℹ️ Prisma info: ${e.message}`);
+    });
+
+    prisma.$on("error", (e) => {
+       logger.error(`❌ Prisma error: ${e.message}`);
+    });
+
 }
 
 // Graceful shutdown function
@@ -107,5 +132,8 @@ const disconnectDatabase = async () => {
   }
 };
 
+export { prisma }
 export default connectDatabase;
-export { getPrismaClient, disconnectDatabase };
+export { disconnectDatabase }
+
+
