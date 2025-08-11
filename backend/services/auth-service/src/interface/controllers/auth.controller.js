@@ -2,13 +2,13 @@ import { authService } from "../../domain/services/auth.service.js";
 import { sessionService } from "../../domain/services/session.service.js";
 import { emailService } from "../../infrastructure/email/email.service.js";
 
-import { ApiError } from "../../../../shared/utils/ApiError.js";
-import { ApiResponse } from "../../../../shared/utils/ApiResponse.js";
-import { asyncHandler } from "../../../../shared/utils/asyncHandler.js";
+import { ApiError } from "../../../../../shared/utils/ApiError.js";
+import { ApiResponse } from "../../../../../shared/utils/ApiResponse.js";
+import { asyncHandler } from "../../../../../shared/utils/asyncHandler.js";
 
 import { generateTokens, generateEmailToken } from "../../infrastructure/auth/jwt.service.js";
 import { clearCookies, setCookies, setEmailCookie } from "../../infrastructure/auth/cookie.service.js";
-import logger from "../../../../shared/utils/logger.js";
+import logger from "../../../../../shared/utils/logger.js";
 
 
 const createAccount = asyncHandler(async(req, res) => {

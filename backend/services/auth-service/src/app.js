@@ -11,7 +11,7 @@ import cron from "node-cron"
 import { initSentry, Sentry } from "./infrastructure/sentry/sentry.js";
 import { sessionService } from "./domain/services/session.service.js";
 import { errorHandler, notFoundHandler } from "./middlewares/globalErrorHandler.js";
-import logger from "../../shared/utils/logger.js";
+import logger from "../../../shared/utils/logger.js";
 
 import authRouter from "./interface/routes/auth.routes.js";
 import sessionRouter from "./interface/routes/session.routes.js";

@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import logger from "../../../../shared/utils/logger.js";
+import logger from "../../../../../shared/utils/logger.js";
 
 let prisma;
 let isConnecting = false;

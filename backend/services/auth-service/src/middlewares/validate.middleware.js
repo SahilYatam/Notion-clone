@@ -1,5 +1,5 @@
 import { StatusCodes } from "http-status-codes";
-import logger from "../../../shared/utils/logger.js";
+import logger from "../../../../shared/utils/logger.js";
 
 const ALLOWED_PROPERTIES = ['body', 'query', 'params', 'headers', 'cookies'];
 
