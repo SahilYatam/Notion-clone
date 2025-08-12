@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import cron from "node-cron"
 
 
-import { initSentry, Sentry } from "./infrastructure/sentry/sentry.js";
+import { initSentry, Sentry } from "../../../shared/error-monitoring/sentry/sentry.js";
 import { sessionService } from "./domain/services/session.service.js";
 import { errorHandler, notFoundHandler } from "./middlewares/globalErrorHandler.js";
 import logger from "../../../shared/utils/logger.js";
@@ -22,8 +22,9 @@ const app = express();
 // Initialize sentry
 initSentry(app);
 
-app.use(Sentry.Handlers.requestHandler());
-app.use(Sentry.Handlers.tracingHandler());
+// app.use(Sentry.Handlers.requestHandler());
+// app.use(Sentry.Handlers.tracingHandler());
+
 
 // Security and middleware
 app.use(helmet());
@@ -47,7 +48,7 @@ app.get("/debug-sentry", function mainHandler(req, res) {
   throw new Error("My first Sentry error!");
 });
 
-app.use(Sentry.Handlers.errorHandler());
+app.use(Sentry.expressErrorHandler());
 
 // Error Handling
 app.use(errorHandler);
