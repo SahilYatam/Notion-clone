@@ -12,9 +12,15 @@
   "license": "ISC",
   "dependencies": {
     "@sentry/node": "^10.4.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
     "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "helmet": "^8.1.0",
     "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
+    "node-cron": "^4.2.1",
     "winston": "^3.17.0",
     "winston-daily-rotate-file": "^5.0.0"
   }
