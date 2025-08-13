@@ -1,63 +1,43 @@
-import express from "express";
+import { createExpressApp } from "../../../shared/Infrastrcuter/factories/expressAppFactory.js";
 
-import helmet from "helmet";
-import cors from "cors";
-import morgan from "morgan";
-import rateLimit from "express-rate-limit";
-import cookieParser from "cookie-parser";
-import cron from "node-cron"
-
-
-import { initSentry, Sentry } from "../../../shared/error-monitoring/sentry/sentry.js";
 import { sessionService } from "./domain/services/session.service.js";
-import { errorHandler, notFoundHandler } from "./middlewares/globalErrorHandler.js";
-import logger from "../../../shared/utils/logger.js";
 
 import authRouter from "./interface/routes/auth.routes.js";
 import sessionRouter from "./interface/routes/session.routes.js";
 
+export const app = createExpressApp({
+    serviceName: "Auth Service",
+    routes: [
+        {
+            path: "/api/v1/auth",
+            router: authRouter,
+            useRateLimit: true,
+            customLimiter: {
+                windowMs: 15 * 60 * 1000,
+                max: 50,
+            }
+        },
+        {
+            path: "/api/v1/session",
+            router: sessionRouter,
+            useRateLimit: true,
+            customLimiter: {
+                windowMs: 15 * 60 * 1000,
+                max: 50,
+            }
+        }
+    ],
 
-const app = express();
+    cronJobs: [
+        {
+            schedule: "0 0 * * *",
+            task: async () => {
+                logger.info("⏰ Running session cleanup job for auth service...");
+                await sessionService.clearExpireSession()
+            },
+            name: "Daily Auth Cleanup",
+        }
+    ],
 
-// Initialize sentry
-initSentry(app);
-
-// app.use(Sentry.Handlers.requestHandler());
-// app.use(Sentry.Handlers.tracingHandler());
-
-
-// Security and middleware
-app.use(helmet());
-app.use(cors());
-app.use(morgan("dev"));
-app.use(express.json({ limit: "20kb" }));
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-
-// Rate Limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  message: "Too many requests, please try again later."
+    enableSentry: true,
 });
-
-app.use("/api/v1/auth", limiter, authRouter);
-app.use("/api/v1/session", limiter, sessionRouter);
-
-app.get("/debug-sentry", function mainHandler(req, res) {
-  throw new Error("My first Sentry error!");
-});
-
-app.use(Sentry.expressErrorHandler());
-
-// Error Handling
-app.use(errorHandler);
-app.use(notFoundHandler);
-
-// CRON Job
-cron.schedule("0 0 * * *", async () => {
-    logger.info("⏰ Running session cleanup job...");
-    await sessionService.clearExpireSession();
-});
-
-export { app };
