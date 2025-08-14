@@ -2,9 +2,12 @@
   "name": "user-service",
   "version": "1.0.0",
   "description": "Notion-Clone user-service",
-  "main": "server.js",
+  "main": "src/server.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "postinstall": "prisma generate",
+    "dev:user": "nodemon src/server.js",
+    "prisma:generate": "prisma generate"
   },
   "author": "",
   "license": "ISC",
@@ -12,7 +15,9 @@
     "@prisma/client": "^6.13.0",
     "@prisma/extension-accelerate": "^2.0.2",
     "axios": "^1.11.0",
+    "dotenv": "^17.2.1",
     "express": "^5.1.0",
+    "nodemon": "^3.1.10",
     "prisma": "^6.13.0"
   }
 }
