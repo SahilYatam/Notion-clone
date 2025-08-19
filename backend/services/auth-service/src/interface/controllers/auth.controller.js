@@ -65,11 +65,6 @@ const login = asyncHandler(async(req, res) => {
     return res.status(200).json(new ApiResponse(200, {user}, "Login successfully"));
 });
 
-const getUserById = asyncHandler(async(req, res) => {
-    const user = await authService.getUserById(req.user?.id)
-    return res.status(200).json(ApiResponse(200, {userId: user.userId}, "User Id fetched"));
-})
-
 const getUser = asyncHandler(async(req, res) => {
     const userId = req.user?.id
     if(!userId) throw new ApiError(401, "User does not exist");

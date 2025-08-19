@@ -22,6 +22,6 @@ router.post("rest-password/:token", validateRequest(authValidate.resetPasswordSc
 
 router.post("/change-password", validateRequest(authValidate.changePasswordSchema), authentication, authController.changePassword);
 
-router.get("/user-profile", authentication, authController.getUser);
+router.get("/get-user", authentication, authController.getUser);
 
 export default router;

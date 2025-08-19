@@ -118,14 +118,6 @@ const login = async (userBody) => {
     return toPublicUser(user);
 }
 
-const getUserById = async(userId) => {
-    const user = await prisma.auth.findUnique({
-        where: {id: userId},
-        select: {id: true}
-    });
-    return {userId: user.id};
-}
-
 const getUser = async(userId) => {
     const user = await prisma.auth.findUnique({
         where: {id: userId, isEmailVerified: true}
