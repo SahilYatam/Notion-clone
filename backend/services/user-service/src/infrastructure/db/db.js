@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client"
 import logger from "../../../../../shared/utils/logger.js"
 
 let prisma;
+/** @type {import('@prisma/client').PrismaClient} */
+let typedPrisma;
 let isConnecting = false;
 
 const connectDatabase = async (dbURI) => {
@@ -43,6 +45,8 @@ const connectDatabase = async (dbURI) => {
                     }
                 }
             });
+
+            typedPrisma = prisma;
 
             await prisma.$connect();
 
@@ -115,6 +119,6 @@ const disconnectDatabase = async () => {
   }
 };
 
-export { prisma }
+export { typedPrisma as prisma }
 export default connectDatabase;
 export { disconnectDatabase }

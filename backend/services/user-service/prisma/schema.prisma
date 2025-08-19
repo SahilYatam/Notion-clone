@@ -20,6 +20,11 @@ enum Role {
   USER
 }
 
+enum Theme {
+    DARK
+    LIGHT
+}
+
 model User {
   id            String      @id @default(uuid())
   authId        String      @unique 
@@ -29,16 +34,18 @@ model User {
   avatarUrl     String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+  settings      UserSettings?
 }
 
 
 model UserSettings {
   id                    String      @id @default(uuid())
-  userId                String   
+  authId                String      @unique
   emailNotifications    Boolean     @default(true)
   pushNotifications     Boolean     @default(true)
-  theme                 String?     // dark, light
+  theme                 Theme       @default(DARK)
   createdAt             DateTime    @default(now())
   updatedAt             DateTime    @updatedAt
+  user                  User        @relation(fields: [authId], references: [authId], onDelete: Cascade)
 }
 
