@@ -1,12 +1,12 @@
 import { createExpressApp } from "../../../shared/Infrastrcuter/factories/expressAppFactory.js";
 
-import workspaceRouter from "./interface/routes/workspace.routes.js";
+import workspaceRouter from "../src/interface/routers/workspace.routes.js"
 
 export const app = createExpressApp({
     serviceName: "Workspace Service",
     routes: [
         {
-            path: "/api/v1/user",
+            path: "/api/v1/workspace",
             router: workspaceRouter,
             useRateLimit: true,
             customLimiter: {
