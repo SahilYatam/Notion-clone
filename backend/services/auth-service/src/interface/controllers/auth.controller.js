@@ -73,6 +73,16 @@ const getUser = asyncHandler(async(req, res) => {
     return res.status(200).json(new ApiResponse(200, {user}, "User fetched successfully"));
 });
 
+const getUserByEmail = asyncHandler(async(req, res) => {
+    const { email } = req.query;
+
+    if(!email) throw new ApiError(400, "Email is required");
+
+    const user = await authService.getUserByEmail(email);
+
+    return res.status(200).json(new ApiResponse(200, {user}, "User email id"));
+})
+
 const logout = asyncHandler(async(req, res) => {
     const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
@@ -116,6 +126,7 @@ export const authController = {
     validateCredentials,
     login,
     getUser,
+    getUserByEmail,
     logout,
     forgetPasswordRequest,
     resetPassword,

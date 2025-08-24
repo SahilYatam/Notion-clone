@@ -5,9 +5,6 @@ import {redis} from "../../infrastructure/db/redisDb.js"
 import jwt from "jsonwebtoken";
 import logger from "../../../../../shared/utils/logger.js"
 
-/**
- * @type {import('@prisma/client').PrismaClient}
- */
 
 const toPublicUser = (user) => ({
     id: user.id,
@@ -128,6 +125,20 @@ const getUser = async(userId) => {
     return toPublicUser(user);
 }
 
+const getUserByEmail = async(email) => {
+    const userEmail = await prisma.auth.findUnique({
+        where: {email},
+        select: {
+            id: true,
+            email: true
+        }
+    });
+
+    if(!userEmail) throw new ApiError(404, "User with this email does not exist!");
+    
+    return userEmail;
+}
+
 const logout = async (refreshToken) => {
     try {
         const hashedToken = helperFunction.hashToken(refreshToken)
@@ -221,8 +232,8 @@ export const authService = {
     verifyOtp,
     validateCredentials,
     login,
-    getUserById,
     getUser,
+    getUserByEmail,
     logout,
     forgetPassword,
     resetPassword,

@@ -24,4 +24,6 @@ router.post("/change-password", validateRequest(authValidate.changePasswordSchem
 
 router.get("/get-user", authentication, authController.getUser);
 
+router.get("/user-email", authentication, authController.getUserByEmail);
+
 export default router;
