@@ -1,11 +1,10 @@
 # 🧠 Notion Clone - In Progress
 
 ## ✅ Features (in progress)
-- [x] User Authentication (JWT, Refresh Tokens)
-- [ ] Pages & Blocks CRUD
-- [ ] Collaborative Editing
-- [ ] Realtime sync
-- [ ] Markdown Editor
+- [x] Authentication and Session services (JWT, Refresh Tokens)
+- [x] User services
+- [x] Workspace services
+- [ ]  Notes services
 
 ## 📦 Tech Stack
 - Backend: Node.js, Express.js
@@ -14,7 +13,7 @@
 - Architecture: Microservices + DDD
 
 ## 🚧 Current Status
-Currently building the backend authentication and session services. Frontend will start soon.
+Currently building the backend Notes services. Frontend will start soon.
 
 ## 🤝 Internship
 I'm a self-taught developer looking for a full-stack or backend internship. Willing to work unpaid to gain experience. Feel free to reach out!
