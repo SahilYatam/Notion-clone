@@ -9,6 +9,6 @@ import {createServer} from "../../../shared/Infrastrcuter/server/createServer.js
 const serviceName = "User-Service";
 
 const DB_URI = process.env.DATABASE_URI
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 8001;
 
 await createServer(app, port, serviceName, DB_URI, connectDatabase, disconnectDatabase)

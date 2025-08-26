@@ -1,10 +1,10 @@
 import { prisma } from "../../infrastructure/db/db.js";
 import { ApiError } from "../../../../../shared/utils/ApiError.js";
 
-const createUserProfile = async (id, userBody) => {
+const createUserProfile = async (authId, userBody) => {
   const profile = await prisma.user.create({
     data: {
-      authId: id,
+      authId,
       avatarUrl: userBody.avatarUrl || null,
       role: userBody.role || "USER",
       settings: {
@@ -16,10 +16,10 @@ const createUserProfile = async (id, userBody) => {
   return profile;
 };
 
-const updateUserProfile = async (id, data) => {
+const updateUserProfile = async (authId, data) => {
     try {
         const updatedName = await prisma.user.update({
-            where: { authId: id },
+            where: { authId },
             data
         });
         return updatedName;
@@ -32,9 +32,14 @@ const updateUserProfile = async (id, data) => {
 };
 
 
-const getUserProfile = async(id) => {
+const getUserProfile = async(authId) => {
     const user = await prisma.user.findUnique({
-        where: {authId: id}
+        where: {authId},
+        select: {
+            id: true,
+            name: true,
+            avatarUrl: true,
+        }
     })
 
     if(!user){
@@ -44,9 +49,22 @@ const getUserProfile = async(id) => {
     return user;
 }
 
-const deleteUserProfile = async(id) => {
+const getUserById = async(authId) => {
+    const user = await prisma.user.findUnique({
+        where: {authId},
+        select: {id: true}
+    });
+
+    if(!user){
+        throw new ApiError(404, "User not found");
+    }
+
+    return user;
+}
+
+const deleteUserProfile = async(authId) => {
     const deletedUser = await prisma.user.delete({
-        where: {authId: id}
+        where: {authId}
     });
 
     return deletedUser;
@@ -56,5 +74,6 @@ export const userService = {
   createUserProfile,
   updateUserProfile,
   getUserProfile,
+  getUserById,
   deleteUserProfile
 };

@@ -1,8 +1,8 @@
 import { prisma } from "../../infrastructure/db/db.js";
 
-const updateUserPrefrence = async(id, prefs) => {
+const updateUserPrefrence = async(authId, prefs) => {
     const updatedPrefrence = await prisma.userSettings.update({
-        where: {authId: id},
+        where: {authId},
         data: prefs
     })
     return updatedPrefrence

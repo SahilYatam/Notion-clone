@@ -12,7 +12,7 @@ export const app = createExpressApp({
             useRateLimit: true,
             customLimiter: {
                 windowMs: 15 * 60 * 1000,
-                max: 100,
+                max: 50,
             }
         },
         {
