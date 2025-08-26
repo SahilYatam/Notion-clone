@@ -1,6 +1,6 @@
-import { prisma } from "../infrastructure/db/db.js";
-import {ApiError} from "../../../../shared/utils/ApiError.js";
-import logger from "../../../../shared/utils/logger.js"
+import { prisma } from "../db/db.js";
+import {ApiError} from "../../../../../shared/utils/ApiError.js";
+import logger from "../../../../../shared/utils/logger.js"
 import jwt from "jsonwebtoken";
 
 /**

@@ -1,7 +1,7 @@
 import {Router} from "express"
-import { validateRequest } from "../../middlewares/validate.middleware.js";
+import { validateRequest } from "../../infrastructure/middlewares/validate.middleware.js";
 import { sessionValidation } from "../../domain/validators/session.validation.js";
-import { authentication } from "../../middlewares/auth.middleware.js";
+import { authentication } from "../../infrastructure/middlewares/auth.middleware.js";
 import { handleRefreshToken, getUserSessions } from "../controllers/session.controller.js";
 
 const router = Router();
