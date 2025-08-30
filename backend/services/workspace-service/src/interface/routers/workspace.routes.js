@@ -22,4 +22,6 @@ router.patch("/update-user-role", validateRequest(workspaceValidation.updateUser
 
 router.get("/user-role", validateRequest(workspaceValidation.getUserRoleSchema), verifyToken, workspaceController.getUserRole)
 
+router.get("/workspace-id", verifyToken, workspaceController.getWorkspaceId)
+
 export default router

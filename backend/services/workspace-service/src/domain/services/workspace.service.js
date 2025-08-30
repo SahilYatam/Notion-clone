@@ -229,6 +229,7 @@ const getUserRole = async(ownerAuthId, targetUserId) => {
 
 export const workspaceService = {
     createWorkspace,
+    getWorkspaceId,
     updateWorkspace,
     deleteWorkspace,
     inviteUserToWorkspace,

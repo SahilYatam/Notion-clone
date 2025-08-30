@@ -14,6 +14,25 @@ const createWorkspace = asyncHandler(async (req, res) => {
     );
 });
 
+const getWorkspaceId = asyncHandler(async (req, res) => {
+  const authId = req.user?.id;
+  const workspace = await workspaceService.getWorkspaceId(authId);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        {
+          id: workspace.id,
+          workspaceOwnerId: workspace.ownerId,
+          workspaceName: workspace.name,
+        },
+        "Workspace created successfully"
+      )
+    );
+});
+
 const updateWorkspace = asyncHandler(async (req, res) => {
   const id = req.user?.id;
   const updatedWorkspace = await workspaceService.updateWorkspace(id, req.body);
@@ -99,6 +118,7 @@ const getUserRole = asyncHandler(async (req, res) => {
 
 export const workspaceController = {
   createWorkspace,
+  getWorkspaceId,
   updateWorkspace,
   deleteWorkspace,
   inviteUserToWorkspace,
