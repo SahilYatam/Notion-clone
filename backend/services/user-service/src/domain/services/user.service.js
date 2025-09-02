@@ -16,6 +16,27 @@ const createUserProfile = async (authId, userBody) => {
   return profile;
 };
 
+const selectWorkspaceType = async (authId, type) => {
+    
+    if(!["PERSONAL", "TEAM"].includes(type)) {
+        throw new ApiError(400, "Invalid workspace type")
+    }
+
+     try {
+        const user = await prisma.user.update({
+            where: { authId },
+            data: { workspaceType: type }
+        });
+
+        return { selectedWorkspaceType: user.workspaceType };
+    } catch (error) {
+        if (error.code === "P2025") { // Prisma "Record not found"
+            throw new ApiError(404, "User not found");
+        }
+        throw new ApiError(500, "Error updating workspace type", { message: error.message });
+    }
+}
+
 const updateUserProfile = async (authId, data) => {
     try {
         const updatedName = await prisma.user.update({
@@ -72,6 +93,7 @@ const deleteUserProfile = async(authId) => {
 
 export const userService = {
   createUserProfile,
+  selectWorkspaceType,
   updateUserProfile,
   getUserProfile,
   getUserById,

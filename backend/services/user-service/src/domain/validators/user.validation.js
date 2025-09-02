@@ -5,6 +5,10 @@ const createUserProfileSchema = Joi.object({
   role: Joi.string().valid("USER", "ADMIN").default("USER"),
 });
 
+const selectWorkspaceTypeSchema = Joi.object({
+  type: Joi.string().valid("PERSONAL", "TEAM").required()
+});
+
 const updateUserProfileSchema = Joi.object({
   name: Joi.string().min(2).max(50).optional(),
   avatarUrl: Joi.string().uri().optional().allow(null, ""),
@@ -25,6 +29,7 @@ const deleteUserProfileSchema = Joi.object({
 
 export const userValidation = {
     createUserProfileSchema,
+    selectWorkspaceTypeSchema,
     updateUserProfileSchema,
     getUserProfileSchema,
     getUserByIdSchema,

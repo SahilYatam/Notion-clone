@@ -9,6 +9,12 @@ const createUserProfile = asyncHandler(async(req, res) => {
     return res.status(200).json(new ApiResponse(200, {profile}, "User profile created!"))
 });
 
+const selectWorkspaceType = asyncHandler(async (req, res) => {
+    const id = req.user.id;
+    const selectedType = await userService.selectWorkspaceType(id, req.body);
+    return res.status(200).json(new ApiResponse(200, {selectedType}, "Workspace type selected!"))
+})
+
 const updateUserProfile = asyncHandler(async(req, res) => {
     const id = req.user?.id
     const updatedUser = await userService.updateUserProfile(id, req.body);
@@ -35,6 +41,7 @@ const deleteUserProfile = asyncHandler(async(req, res) => {
 
 export const userController = {
     createUserProfile,
+    selectWorkspaceType,
     updateUserProfile,
     getUserProfile,
     getUserById,
