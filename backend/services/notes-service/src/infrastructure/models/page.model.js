@@ -2,17 +2,26 @@ import mongoose from "mongoose";
 
 const pageSchema = new mongoose.Schema(
   {
+    title: { 
+        type: String,  
+        default: "New Page"
+    },
+
+    coverImage: { type: String },
+
     blockId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Block",
-      required: true,
     },
 
-    title: { type: String, required: true },
+    workspaceId: {
+        type: String,
+    },
 
-    icon: { type: String },
-
-    coverImage: { type: String },
+    userId: {
+        type: String,
+        required: true
+    }
   },
   { timestamps: true }
 );

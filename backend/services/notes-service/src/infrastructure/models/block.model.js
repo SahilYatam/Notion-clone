@@ -4,11 +4,14 @@ const blockSchema = new mongoose.Schema(
   {
     type: {
       type: String,
-      enum: ["page", "paragraph", "todo", "heading", "image"],
+      enum: ["page", "paragraph", "todo"],
       required: true,
     },
 
-    content: mongoose.Schema.Types.Mixed, 
+    content:{ 
+        type: mongoose.Schema.Types.Mixed, 
+        default: {}
+    },
 
     parentId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -25,7 +28,6 @@ const blockSchema = new mongoose.Schema(
 
     workspaceId: {
       type: String,
-      required: true,
     },
 
     createdBy: {
