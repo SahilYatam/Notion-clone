@@ -2,7 +2,7 @@ import { prisma } from "../../infrastructure/db/db.js";
 import { ApiError } from "../../../../../shared/utils/ApiError.js";
 import { helperFunction } from "../../utils/helperFunctions.js";
 
-import { generateTokens } from "../../infrastructure/auth/jwt.service.js";
+import { generateTokens } from "./jwt.service.js";
 
 import logger from "../../../../../shared/utils/logger.js";
 import * as UAParser from 'ua-parser-js'

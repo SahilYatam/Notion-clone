@@ -6,8 +6,8 @@ import { ApiError } from "../../../../../shared/utils/ApiError.js";
 import { ApiResponse } from "../../../../../shared/utils/ApiResponse.js";
 import { asyncHandler } from "../../../../../shared/utils/asyncHandler.js";
 
-import { generateTokens, generateEmailToken } from "../../infrastructure/auth/jwt.service.js";
-import { clearCookies, setCookies, setEmailCookie } from "../../infrastructure/auth/cookie.service.js";
+import { generateTokens, generateEmailToken } from "../../domain/services/jwt.service.js";
+import { clearCookies, setCookies, setEmailCookie } from "../../domain/services/cookie.service.js";
 import logger from "../../../../../shared/utils/logger.js";
 
 

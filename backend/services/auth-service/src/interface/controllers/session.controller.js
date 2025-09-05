@@ -1,5 +1,5 @@
 import { sessionService } from "../../domain/services/session.service.js";
-import { setCookies } from "../../infrastructure/auth/cookie.service.js";
+import { setCookies } from "../../domain/services/cookie.service.js";
 
 export const handleRefreshToken = async(req, res, next) => {
     try {
